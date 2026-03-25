@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenWhisper - Speech to Text</title>
+</head>
+<body>
+    <h2>Upload an Audio File or Record one.</h2>
+    <form action = "/upload" enctype = "multipart/form-data" method = "post">
+        <label for = "audio_input">UPLOAD</label>
+        <input accept = "audio/*" id = "audio_input" name = "audio_file" type = "file">
+        <input type = "submit" value = "Transcribe">
+    </form>
+
+    <h2> - - - </h2>
+    <div style = "margin-bottom: 10px">
+        <button id = "start-recording">Start Recording</button>
+        <button disabled id = "stop-recording">Stop</button>
+    </div>
+
+    <div>
+        <audio controls id = "audio-playback"></audio>
+    </div>
+
+    <h2 style = "margin-bottom: 0">Transcription: ___ ___ ___</h2>
+    <div id = "transcription"></div>
+
+    <script>
+        
+    </script>
+</body>
+</html>
