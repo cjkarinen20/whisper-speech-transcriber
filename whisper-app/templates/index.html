@@ -27,7 +27,78 @@
     <div id = "transcription"></div>
 
     <script>
-        
+        function transcribe(form_data)
+        {
+            const TRANSCRIPTION_DIV = document.getElementById('');
+
+            return fetch('/upload', {
+                method: 'POST',
+                body: form_data
+            }).then(response => response.json()).then(data => {
+                if (data.transcription) {
+                    TRANSCRIPTION_DIV.textContent = data.transcription;
+                } else {
+                    TRANSCRIPTION_DIV.textContent = 'Error: response not received.';
+                    console.error('Error in response: ', data);
+                }
+            }).catch(error => {
+                TRANSCRIPTION_DIV.textContent = 'Could not send the audio file.';
+                console.error('Fetch error: ', error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() 
+        {
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const FORM_DATA = new FormData(form);
+                transcribe(FORM_DATA);
+            });
+
+            let mediaRecorder;
+            let audioChunks = [];
+
+            const START_RECORDING = document.getElementById('startRecording');
+            const STOP_RECORDING = document.getElementById('stopRecording');
+            const AUDIO_PLAYBACK = document.getElementById('audioPlayback');
+
+            startRecording.adEventListener('click', () => {
+                navigator.mediaDevices.getUserMedia({audio: true})
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener('stop', () => {
+                        const audioBlob = new Blob(audioChunks, {type: 'audio/wav'});
+                        audioChunks = [];
+
+                        audioPlayback.src = URL.createObjectURL(audioBlob);
+
+                        //Create a form-data object
+                        const formData = new FormData();
+                        formData.append('audio_file', audioBlob, 'recording.wav')
+
+                        transcribe(formData);
+                    });
+                    START_RECORDING.disabled = true;
+                    STOP_RECORDING.disabled = false;
+                });
+            });
+            STOP_RECORDING.addEventListener('click', () => {
+                if(mediaRecorder) {
+                    mediaRecorder.stop();
+                    startRecording.disabled = false;
+                    stopRecording.disabled = true;
+                }
+            });
+        });
+    
     </script>
 </body>
 </html>
